@@ -6,32 +6,34 @@ module IRR_tb;
   // Parameters
   parameter SIM_TIME = 1000;
 
-  // Signals
+
+// Signals for IRR module
   reg sensitivityMode;
   reg [7:0] peripheralInterrupts;
+  reg [7:0] clear;
   wire [7:0] interruptRequest;
 
   // Instantiate the IRR module
-  IRR uut (
+  IRR uut_irr (
     .sensitivityMode(sensitivityMode),
+    .clearInterruptRequest(clear),
     .peripheralInterrupts(peripheralInterrupts),
     .interruptRequest(interruptRequest)
   );
-
   // Initial stimulus
   initial begin
     // Initialize inputs
     sensitivityMode = 0;
     peripheralInterrupts = 8'b00000000;
-
+	clear=0;
     // Apply stimulus and monitor outputs
     repeat(SIM_TIME) begin
       // Apply random stimuli
       sensitivityMode = $random;
       peripheralInterrupts = $random;
-
+	  clear=$random;
       // Display inputs
-      $display("Time=%0t | sensitivityMode=%b | peripheralInterrupts=%b", $time, sensitivityMode, peripheralInterrupts);
+      $display("Time=%0t | sensitivityMode=%b | peripheralInterrupts=%b | Clear =%b ", $time, sensitivityMode, peripheralInterrupts,clear);
 
       // Wait for some time
       #1;
