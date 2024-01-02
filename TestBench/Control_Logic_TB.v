@@ -49,17 +49,22 @@ module Control_Logic_Testbench;
     read_enable_n = 1;
     write_enable_n = 0;
     A0 = 0;
-    data_bus_in = 8'h10;
+    data_bus_in = 8'h18;
     eoi = 0;
     INTA = 1;
     #10
 
     //Sending an OCW1 to change the interrupt mask to  8'b00001010, and sending interrupts on lines [0 : 3].
-    data_bus_in = 8'b00001010;
+    data_bus_in = 8'b00000000;
     A0 = 1;
-    IRRperipheralInterrupts = 8'h0F;
+    #10
+
+    data_bus_in = 8'b00000000;
+    A0 = 0;
+    IRRperipheralInterrupts = 8'h81;
     #10
     
+    IRRperipheralInterrupts = 8'h00;
     INTA = 0;   //Sending the first acknowledgement from the CPU.
     #10
     
@@ -74,6 +79,7 @@ module Control_Logic_Testbench;
     #10
 
     //Sending an OCW3 and a read enable signal to be able to read the status of the IRR register.
+    INTA = 1;
     read_enable_n = 0;
     write_enable_n = 0;
     A0 = 0;
@@ -91,8 +97,47 @@ module Control_Logic_Testbench;
     eoi = 1;
     #10
 
-    //Add a test case when we are executing an interrupt and a higher interrupt comes in
-    //Add a test case when we are using edge level sensitive
+
+    //test case when we are executing an interrupt and a higher interrupt comes in
+    eoi = 0;
+    A0 = 0;
+    data_bus_in = 8'h00;
+    #10
+    
+    INTA = 0;   //Sending the first acknowledgement from the CPU.
+    #10
+
+    //Sending the following 2 pulses on INTA line to send the ISR vector.
+    INTA = 1;
+    #10
+    INTA = 0;
+    #10
+    INTA = 1;
+    #10
+    INTA = 0;
+    #10
+    
+    IRRperipheralInterrupts = 8'h01;  //A higher interrupt
+    #10
+    
+    INTA = 0;   //Sending the first acknowledgement from the CPU.
+    #10
+
+    //Sending the following 2 pulses on INTA line to send the ISR vector.
+    INTA = 1;
+    #10
+    INTA = 0;
+    #10
+    INTA = 1;
+    #10
+    INTA = 0;
+    #10
+    
+
+    //Sending an end of interrupt signal to inform the PIC that the execution of the interrupt service has completed.
+    eoi = 1;
+    #10
+
 
     // Wait for simulation to finish
     #100 $finish;
