@@ -136,9 +136,11 @@ module Control_Logic (
                 end
             end
             WAIT_CPU_ACK: begin
+                INT <= 0;
                 if(~INTA)
                 begin
                     clearInterruptRequest <= interruptVector;    //Clear the interrupt bit in IRR
+                    internal_eoi <= 0;
                     int_no <= interruptVector;                   //Set the bit in ISR
 
                     data_bus_out <= 8'b11001101;                 //Release a CALL instruction code onto the 8-bit Data bus
@@ -191,7 +193,7 @@ module Control_Logic (
         end
 
         prev_INTA = INTA; 
-        IRR_input = IRR_input | IRRperipheralInterrupts;
+        IRR_input = IRRperipheralInterrupts;
     end
 
 endmodule
